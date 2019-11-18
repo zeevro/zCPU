@@ -1,0 +1,42 @@
+0000 0 NOP
+0001 1 LOADl
+0010 2 ADDl
+0011 3 SUBl
+0100 4 ANDl
+0101 5 ORl
+0110 6 NOT
+0111 7 LOADm
+1000 8 ADDm
+1001 9 SUBm
+1011 a ANDm
+1011 b ORm
+1100 c STORE
+1101 d JMP
+1110 e JEQ
+1111 f OUT
+
+acc src:
+0 = literal
+1 = alu
+2 = ram
+
+acc dst:
+0 = alu
+1 = ram
+2 = pc
+3 = out
+
+alu src:
+0 = literal
+1 = ram
+
+alu op:
+0 = add
+1 = sub
+2 = and
+3 = or
+4 = not
+
+ram:
+0 = store
+1 = load

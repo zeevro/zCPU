@@ -1,0 +1,14 @@
+    mov bx, :hello
+loop:
+    mov ax, [bx]
+    jz :end
+    out ax
+    mov ax, bx
+    add 1
+    mov bx, ax
+    jmp :loop
+
+end:
+    jmp :end
+
+$hello "Hello, world!\n"

@@ -1,0 +1,14 @@
+out 12
+mov gp, 0
+out 2
+
+loop:
+mov ax, gp
+add 1
+and 0b00111111
+mov gp, ax
+shl 2
+add 2
+out 1
+out ax
+jmp :loop

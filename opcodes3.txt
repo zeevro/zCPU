@@ -1,0 +1,28 @@
+1st:
+operand?           : 1
+alu/branch^?       : 1
+stack?             : 1
+stk-inc/dec, cond? : 1
+alu op/branch-ctrl : 4
+
+2nd:
+src ind?   : 1
+dst ind?   : 1
+src/addr   : 3
+dst/addr   : 3
+
+
+src:
+000 = in, 001 = out, 010 = acc, 011 = bcc, 100 = ram (never used), 101 = pc, 110 = lit
+
+addr:
+000 = in, 001 = sp, 010 = acc, 011 = bcc, 100 = pc, 101 = lit
+
+dst:
+000 = sp, 001 = acc, 010 = bcc, 011 = pc, 100 = out
+
+branch-ctrl:
+add-3?  : 1
+eq/neq  : 1
+0/gp    : 1
+in?     : 1

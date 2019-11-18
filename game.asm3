@@ -1,0 +1,86 @@
+ss :stack
+
+main:
+	call :draw
+	//out $posx
+	push ;main
+
+loop:
+	jin :input
+	jmp :loop
+input:
+	mov ax, in
+	jz :right
+	sub 1
+	jz :up
+	sub 1
+	jz :down
+	sub 1
+	jz :left
+	sub 1
+	jz :clear
+	sub 1
+	jz :reset_cursor
+	jmp :loop
+	
+add_3_bits:
+	mov ax, [gp]
+	add 1
+	and 0b00000111
+	mov [gp], ax
+	ret
+	
+sub_3_bits:
+	mov ax, [gp]
+	sub 1
+	and 0b00000111
+	mov [gp], ax
+	ret
+
+draw:
+	mov ax, $posx
+	shl 3
+	add $posy
+	shl 2
+	add 2
+	out 1
+	out ax
+	ret
+
+right:
+	mov gp, :posx
+	call :add_3_bits
+	ret
+
+up:
+	mov gp, :posy
+	call :sub_3_bits
+	ret
+
+down:
+	mov gp, :posy
+	call :add_3_bits
+	ret
+
+left:
+	mov gp, :posx
+	call :sub_3_bits
+	ret
+
+clear:
+	out 1
+	ret
+
+reset_cursor:
+	mov gp, 0
+	mov $posx, gp
+	mov $posy, gp
+	ret
+
+end:
+	jmp :end
+
+$posx 0
+$posy 0
+
+stack:

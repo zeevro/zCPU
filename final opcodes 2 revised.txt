@@ -1,0 +1,52 @@
+type:
+movla // literal -> acc
+movlam // literal -> ram (operand = data, addr = acc)
+movlma // ram -> acc (operand = addr)
+movalm // acc -> ram (operand = addr)
+movrr // reg -> reg (operand = src reg + dst reg)
+movrmr // ram -> reg (operand = addr reg + data reg)
+movrrm // reg -> ram (operand = addr reg + data reg)
+
+addl // acc += literal
+addlm // acc += ram (operand = addr)
+addr // acc += reg (operand = src reg)
+addrm // acc += ram (operand = addr reg)
+
+
+src/data reg:
+0=in, 1=out, 2=acc, 4=pc, a=stack (only for movrr and addr)
+
+dst reg:
+0=sp, 1=acc, 2=pc, 3=out, 4=stack (only for movrr), a=cond-bra
+
+addr reg:
+0=in, 1=sp, 2=acc
+
+
+instruction:
+abcdefgh
+
+a: 0 = mov, 1 = alu
+b: 1 = read indirect
+
+c [a=0]: 1 = write indirect
+d-e [a=0]: read/addr: 00=lit, 01=acc, 10=reg
+f-h [a=0]: write/addr: 000=lit, 001=acc, 010=reg
+
+c [a=1]: 0=lit, 1=reg
+e-h [a=1]: alu-op
+
+
+examples:
+movla  = 00000001 nnnnnnnn (n = number)
+movlam = 00010001 nnnnnnnn
+movlma = 00100001 aaaaaaaa (a = address)
+movalm = 00010100 aaaaaaaa
+movrr  = 00001010 ddddtttt (d = data bus, a = address bus, t = target register)
+movrmr = 00101010 aaaatttt
+movrrm = 00011010 ddddaaaa
+
+addl   = 0100cccc nnnnnnnn (c = alu op)
+addr   = 0101cccc dddd----
+addlm  = 0110cccc aaaaaaaa
+addrm  = 0111cccc aaaa----

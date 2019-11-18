@@ -1,0 +1,80 @@
+Control
+=======
+0 nop / reserved
+1 mov
+2 alu
+3 stack
+4 branch
+
+
+Data Bus
+========
+0 In Port
+1 Out Latch
+2 Acc
+3 RAM
+4 PC
+5 Literal
+
+
+Addr Bus
+========
+0 In Port
+1 SP
+2 Acc
+3 Literal
+
+
+SP
+==
+0 nop
+1 set
+2 dec
+4 inc
+8 reset
+
+
+Acc
+===
+0 nop
+1 set
+
+
+ALU
+===
+0 add
+1 sub
+2 sub~
+3 mul
+4 div
+5 mod
+6 div~
+7 mod~
+8 shl
+9 shr
+a rol
+b ror
+c and
+d or
+e xor
+f not
+
+
+RAM
+===
+0 nop
+1 write
+3 read
+
+
+Branch
+======
+0 nop
+1 branch
+2 cond
+
+
+Out
+===
+0 nop
+1 write
