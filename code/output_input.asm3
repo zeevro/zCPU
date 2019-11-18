@@ -1,0 +1,5 @@
+loop:
+    skin :input
+    jmp :loop
+    out in
+    jmp :loop

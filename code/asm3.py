@@ -1,4 +1,4 @@
-import sys
+#!/usr/bin/python3
 from collections import defaultdict
 
 
@@ -46,6 +46,11 @@ KEYWORDS = {'nop': ((), False, {'src': 'gp', 'dst': 'gp'}),
             'jeq': (('src',), True, {'dst': 'pc', 'cond': 'acc==gp'}),
             'jne': (('src',), True, {'dst': 'pc', 'cond': 'acc!=gp'}),
             'jin': (('src',), True, {'dst': 'pc', 'cond': 'in-port'}),
+            'skz': ((), False, {'src': 'pc', 'dst': 'pc', 'add_3': True, 'cond': 'acc==0'}),
+            'sknz': ((), False, {'src': 'pc', 'dst': 'pc', 'add_3': True, 'cond': 'acc!=0'}),
+            'skeq': ((), False, {'src': 'pc', 'dst': 'pc', 'add_3': True, 'cond': 'acc==gp'}),
+            'skne': ((), False, {'src': 'pc', 'dst': 'pc', 'add_3': True, 'cond': 'acc!=gp'}),
+            'skin': ((), False, {'src': 'pc', 'dst': 'pc', 'add_3': True, 'cond': 'in-port'}),
             'incsp': ((), False, {'stack': 'push', 'src': 'gp', 'dst': 'gp'}),
             'decsp': ((), False, {'stack': 'pop', 'src': 'gp', 'dst': 'gp'}),
             'ret': ((), False, {'stack': 'pop', 'src_ind': True, 'src': 'sp', 'dst': 'pc', 'add_3': True})}
@@ -81,7 +86,8 @@ SRC = {'in': 0,
        'bx': 3,
        'ram': 4,
        'pc': 5,
-       'lit': 6}
+       'lit': 6,
+       'alu': 7}
 
 DST = {'sp': 0,
        'acc': 1,
@@ -98,7 +104,8 @@ ADDR = {'in': 0,
         'gp': 3,
         'bx': 3,
         'pc': 4,
-        'lit': 5}
+        'lit': 5,
+        'alu': 7}
 
 
 BUILTIN_MACROS = '''
@@ -320,11 +327,6 @@ def compile(code):
             except Exception as e:
                 raise Exception('Error in line {}: {}'.format(n, e))
 
-    print('Symbols:')
-    for label, (offset, _refs) in symbols.items():
-        print('{:<12}: 0x{:02x} ({})'.format(label, offset, offset))
-    print()
-    print('Size of code: {} bytes'.format(len(out)))
     return (out, dict(symbols))
 
 
@@ -339,10 +341,21 @@ def link(code, symbols):
 def write_ram_file(binary, filename):
     with open(filename, 'w') as f:
         f.write('v2.0 raw\n' + bin_fmt(binary))
+    print('{}: {} bytes'.format(filename, len(binary)))
+
+
+def pretty_print_size(obj):
+    print('Size of code: {} bytes'.format(len(obj)))
+
+
+def pretty_print_symbols(symbols):
+    print('Symbols')
+    print('=======')
+    for label, (offset, _refs) in symbols.items():
+        print('{:<12}: 0x{:02x} ({})'.format(label, offset, offset))
 
 
 def pretty_print_code(code, binary):
-    print()
     print('Disassembly')
     print('===========')
     pc = 0
@@ -367,16 +380,37 @@ def pretty_print_code(code, binary):
 
 
 def main():
-    with open(sys.argv[1]) as f:
+    import argparse
+    p = argparse.ArgumentParser()
+    p.add_argument('-E', '--preprocess', action='store_true')
+    p.add_argument('-c', '--compile', action='store_true')
+    p.add_argument('-i', '--print-size', action='store_true')
+    p.add_argument('-s', '--print-symbols', action='store_true')
+    p.add_argument('-d', '--print-disassembly', action='store_true')
+    p.add_argument('-o', '--output')
+    p.add_argument('source')
+    args = p.parse_args()
+
+    with open(args.source) as f:
         code = f.read()
 
     try:
         macros = preprocess_macro_definitions(BUILTIN_MACROS)
         code = preprocess(code, macros)
-        object, symbols = compile(code)
-        binary = link(object, symbols)
-        write_ram_file(binary, sys.argv[2])
-        pretty_print_code(code, binary)
+        if args.preprocess:
+            return
+        obj, symbols = compile(code)
+        if args.compile:
+            return
+        binary = link(obj, symbols)
+        if args.output:
+            write_ram_file(binary, args.output)
+        if args.print_size:
+            pretty_print_size(obj)
+        if args.print_symbols:
+            pretty_print_symbols(symbols)
+        if args.print_disassembly:
+            pretty_print_code(code, binary)
     except Exception as e:
         print(e)
 
